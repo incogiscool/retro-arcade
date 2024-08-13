@@ -1,5 +1,9 @@
-import Image from "next/image";
+import { Button } from "@/components/ui/button";
 
 export default function Home() {
-  return <div>omak</div>;
+  return (
+    <div>
+      <h1 className="text-4xl font-bold">Welcome to Next.js!</h1>
+    </div>
+  );
 }

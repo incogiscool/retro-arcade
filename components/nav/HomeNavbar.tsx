@@ -1,5 +1,9 @@
-import { cn } from "@/lib/utils";
+import { Input } from "../ui/input";
 
-export const HomeNavbar = ({ className }: { className?: string }) => {
-  return <nav className={cn("h-full border w-[100px]", className)}>omak</nav>;
+export const HomeNavbar = () => {
+  return (
+    <nav className="w-full border-b h-fit bg-background-secondary">
+      <Input placeholder="Search..." />
+    </nav>
+  );
 };
