@@ -4,6 +4,7 @@ import "./globals.css";
 import { cn } from "@/lib/utils";
 import { HomeSidebar } from "@/components/nav/HomeSidebar";
 import { HomeNavbar } from "@/components/nav/HomeNavbar";
+import { Footer } from "@/components/footer/Footer";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -30,6 +31,7 @@ export default function RootLayout({
           <HomeSidebar className="h-full" />
           <main className="flex-grow p-12">{children}</main>
         </div>
+        <Footer />
       </body>
     </html>
   );
