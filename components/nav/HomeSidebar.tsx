@@ -4,6 +4,34 @@ import { cn } from "@/lib/utils";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
+// export const SidebarItem = ({
+//   icon,
+//   name,
+//   link,
+//   id
+// }: Readonly<{
+//   icon: React.ReactNode;
+//   name: string;
+//   link: string;
+//   id: string
+//   isActive?: boolean;
+// }>) => {
+//   return (
+//     <Link key={id}  href={link}>
+//       <li
+//         className={`flex items-center gap-2 rounded-md p-3 transition ${
+//           isActive
+//             ? "bg-primary"
+//             : "hover:bg-primary/80"
+//         }`}
+//       >
+//         {icon}
+//         <span className="text-sm">{name}</span>
+//       </li>
+//     </Link>
+//   );
+// };
+
 export const HomeSidebar = ({ className }: { className?: string }) => {
   const currentPathName = usePathname();
 

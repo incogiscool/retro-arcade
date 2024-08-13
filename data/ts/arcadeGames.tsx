@@ -1,13 +1,13 @@
 import { Gamepad, Mountain, Rocket, Trophy, Worm } from "lucide-react";
 
 export const arcadeGames = [
-  { name: "Home", id: "home", link: "/", icon: <Gamepad /> },
-  {
-    name: "Leaderboard",
-    id: "leaderboard",
-    link: "/leaderboard",
-    icon: <Trophy />,
-  },
+  // { name: "Home", id: "home", link: "/", icon: <Gamepad /> },
+  // {
+  //   name: "Leaderboard",
+  //   id: "leaderboard",
+  //   link: "/leaderboard",
+  //   icon: <Trophy />,
+  // },
   {
     name: "Space Invaders",
     id: "space-invaders",
