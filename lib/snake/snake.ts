@@ -117,17 +117,6 @@ export class Snake {
     }
   }
 
-  private checkCollision() {
-    const snakeHead = this.snakeCoordinates[0];
-
-    if (
-      snakeHead.x === this.grid[0].length ||
-      snakeHead.y === this.grid.length
-    ) {
-      this.gameOver = true;
-    }
-  }
-
   public setMovement(direction: Direction) {
     this.currentDirection = direction;
   }
@@ -143,16 +132,30 @@ export class Snake {
 
     while (true) {
       await new Promise((resolve) => setTimeout(resolve, this.tickSpeed));
+      const snakeHead = this.snakeCoordinates[0];
 
-      this.moveSnake(this.currentDirection);
+      if (
+        (snakeHead.y === this.grid.length - 1 &&
+          this.currentDirection === "down") ||
+        (snakeHead.y === 0 && this.currentDirection === "up")
+      ) {
+        this.gameOver = true;
 
-      this.checkCollision();
-
-      if (this.gameOver) {
         setGameOver?.(this.gameOver);
         break;
       }
 
+      this.moveSnake(this.currentDirection);
+
+      // Check for collisions
+      if (snakeHead.x > this.grid[0].length || snakeHead.x < 0) {
+        this.gameOver = true;
+
+        setGameOver?.(this.gameOver);
+        break;
+      }
+
+      console.log(snakeHead.x, this.grid[0].length);
       updateGrid?.([...this.grid]); // Spread operator to ensure a new reference
     }
   }
