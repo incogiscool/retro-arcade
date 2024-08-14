@@ -64,6 +64,7 @@ export class Snake {
 
   moveSnake(direction: Direction) {
     const snakeHead = this.snakeHead;
+
     switch (direction) {
       case "up":
         this.snakeCoordinates.unshift({
@@ -99,4 +100,28 @@ export class Snake {
 
   //     return false;
   //   }
+
+  async play(gridHeight: number, gridWidth: number) {
+    this.createGrid(gridHeight, gridWidth);
+    this.generateApple();
+    this.generateSnake();
+
+    while (true) {
+      // this.moveSnake("right");
+
+      // if (
+      //   this.snakeHead.x === this?.appleCoordinates?.x &&
+      //   this.snakeHead.y === this?.appleCoordinates?.y
+      // ) {
+      //   this.eatApple();
+      //   this.generateApple();
+      //   // this.generateSnake();
+      // }
+
+      console.log(this.grid);
+
+      // Delay
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+    }
+  }
 }
