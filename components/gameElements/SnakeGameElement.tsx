@@ -7,14 +7,15 @@ import { Button } from "../ui/button";
 export const SnakeGameElement = () => {
   const [grid, setGrid] = useState<Grid>([]);
   const [ready, setReady] = useState(false);
+  const [gameOver, setGameOver] = useState(false);
 
   const snake = new Snake();
 
   useEffect(() => {
     if (ready) {
-      snake.play(15, 15, setGrid);
+      snake.play(15, 15, setGrid, setGameOver);
     }
-  }, [ready]);
+  }, [ready, gameOver]);
 
   // On WASD keys move snake
   if (ready) {
@@ -36,7 +37,7 @@ export const SnakeGameElement = () => {
 
   return (
     <div className="h-full w-full">
-      {ready ? (
+      {ready && !gameOver ? (
         <div className="flex flex-col justify-between h-full">
           {grid.map((row, i) => (
             <div key={i} className="flex flex-grow">

@@ -6,12 +6,10 @@ export class Snake {
   public snakeCoordinates: Coordinates[] = [];
   public currentDirection: Direction = "right";
 
+  public gameOver = false;
+
   readonly startPosition: Coordinates = { x: 0, y: 0 };
   readonly tickSpeed = 250;
-  readonly snakeHead = this.snakeCoordinates[0] || this.startPosition;
-  readonly snakeTail =
-    this.snakeCoordinates[this.snakeCoordinates.length - 1] ||
-    this.startPosition;
 
   constructor() {}
 
@@ -119,6 +117,17 @@ export class Snake {
     }
   }
 
+  private checkCollision() {
+    const snakeHead = this.snakeCoordinates[0];
+
+    if (
+      snakeHead.x === this.grid[0].length ||
+      snakeHead.y === this.grid.length
+    ) {
+      this.gameOver = true;
+    }
+  }
+
   public setMovement(direction: Direction) {
     this.currentDirection = direction;
   }
@@ -126,7 +135,8 @@ export class Snake {
   public async play(
     gridHeight: number,
     gridWidth: number,
-    updateGrid?: (grid: Grid) => void
+    updateGrid?: (grid: Grid) => void,
+    setGameOver?: (gameOver: boolean) => void
   ) {
     this.createGrid(gridHeight, gridWidth);
     this.generateSnake();
@@ -135,6 +145,13 @@ export class Snake {
       await new Promise((resolve) => setTimeout(resolve, this.tickSpeed));
 
       this.moveSnake(this.currentDirection);
+
+      this.checkCollision();
+
+      if (this.gameOver) {
+        setGameOver?.(this.gameOver);
+        break;
+      }
 
       updateGrid?.([...this.grid]); // Spread operator to ensure a new reference
     }
