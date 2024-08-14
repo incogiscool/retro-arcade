@@ -6,8 +6,10 @@ export class Snake {
   public snakeCoordinates: Coordinates[] = [];
 
   readonly startPosition: Coordinates = { x: 0, y: 0 };
-  readonly snakeHead = this.snakeCoordinates[0];
-  readonly snakeTail = this.snakeCoordinates[this.snakeCoordinates.length - 1];
+  readonly snakeHead = this.snakeCoordinates[0] || this.startPosition;
+  readonly snakeTail =
+    this.snakeCoordinates[this.snakeCoordinates.length - 1] ||
+    this.startPosition;
 
   constructor() {}
 
@@ -48,7 +50,7 @@ export class Snake {
 
   eatApple() {
     if (this.appleCoordinates) {
-      this.grid[this.appleCoordinates.x][this.appleCoordinates.y] = 0;
+      this.grid[this.appleCoordinates.y][this.appleCoordinates.x] = 0;
       this.appleCoordinates = null;
     }
   }
@@ -58,37 +60,60 @@ export class Snake {
       x: this.startPosition.x,
       y: this.startPosition.y,
     });
-    this.grid[this.startPosition.x][this.startPosition.y] = 2;
+    this.grid[this.startPosition.y][this.startPosition.x] = 2;
   }
 
   moveSnake(direction: Direction) {
-    const snakeHead = this.snakeHead;
-
     switch (direction) {
-      case "up":
-        this.snakeCoordinates.unshift({
-          x: snakeHead.x,
-          y: snakeHead.y - 1,
+      case "right": {
+        this.snakeCoordinates = this.snakeCoordinates.map((snakeCoordinate) => {
+          this.grid[snakeCoordinate.y][snakeCoordinate.x] = 0;
+          this.grid[snakeCoordinate.y][snakeCoordinate.x + 1] = 2;
+          return {
+            x: snakeCoordinate.x + 1,
+            y: snakeCoordinate.y,
+          };
         });
         break;
-      case "down":
-        this.snakeCoordinates.unshift({
-          x: snakeHead.x,
-          y: snakeHead.y + 1,
+      }
+      case "left": {
+        this.snakeCoordinates = this.snakeCoordinates.map((snakeCoordinate) => {
+          this.grid[snakeCoordinate.y][snakeCoordinate.x] = 0;
+          this.grid[snakeCoordinate.y][snakeCoordinate.x - 1] = 2;
+          return {
+            x: snakeCoordinate.x - 1,
+            y: snakeCoordinate.y,
+          };
         });
+
         break;
-      case "left":
-        this.snakeCoordinates.unshift({
-          x: snakeHead.x - 1,
-          y: snakeHead.y,
+      }
+
+      case "down": {
+        this.snakeCoordinates = this.snakeCoordinates.map((snakeCoordinate) => {
+          this.grid[snakeCoordinate.y][snakeCoordinate.x] = 0;
+          this.grid[snakeCoordinate.y + 1][snakeCoordinate.x] = 2;
+          return {
+            x: snakeCoordinate.x,
+            y: snakeCoordinate.y + 1,
+          };
         });
+
         break;
-      case "right":
-        this.snakeCoordinates.unshift({
-          x: snakeHead.x + 1,
-          y: snakeHead.y,
+      }
+
+      case "up": {
+        this.snakeCoordinates = this.snakeCoordinates.map((snakeCoordinate) => {
+          this.grid[snakeCoordinate.y][snakeCoordinate.x] = 0;
+          this.grid[snakeCoordinate.y - 1][snakeCoordinate.x] = 2;
+          return {
+            x: snakeCoordinate.x,
+            y: snakeCoordinate.y - 1,
+          };
         });
+
         break;
+      }
     }
   }
 
@@ -101,10 +126,13 @@ export class Snake {
     this.generateSnake();
 
     while (true) {
-      this.generateApple();
-
+      // this.generateApple();
       await new Promise((resolve) => setTimeout(resolve, 500));
-      this.eatApple();
+
+      this.moveSnake("right");
+      this.moveSnake("down");
+
+      // this.eatApple();
 
       updateGrid([...this.grid]); // Spread operator to ensure a new reference
     }
