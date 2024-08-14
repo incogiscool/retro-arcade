@@ -9,8 +9,6 @@ export const SnakeGameElement = () => {
   useEffect(() => {
     const snake = new Snake();
     snake.play(15, 15, setGrid);
-
-    return () => {};
   }, []);
 
   return (

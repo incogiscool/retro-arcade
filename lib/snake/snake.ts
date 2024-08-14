@@ -106,8 +106,6 @@ export class Snake {
       await new Promise((resolve) => setTimeout(resolve, 500));
       this.eatApple();
 
-      console.log(this.grid);
-
       updateGrid([...this.grid]); // Spread operator to ensure a new reference
     }
   }
