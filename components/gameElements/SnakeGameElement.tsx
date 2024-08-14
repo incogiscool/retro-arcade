@@ -1,28 +1,36 @@
+"use client";
 import { Snake } from "@/lib/snake/snake";
+import { Grid } from "@/lib/types";
+import { useEffect, useState } from "react";
 
 export const SnakeGameElement = () => {
-  const snake = new Snake();
-  snake.play(15, 15);
+  const [grid, setGrid] = useState<Grid>([]);
 
-  console.log(snake.grid);
+  useEffect(() => {
+    const snake = new Snake();
+    snake.play(15, 15, setGrid);
+
+    return () => {};
+  }, []);
+
   return (
     <div className="flex flex-col justify-between h-full">
-      {snake.grid.map((row, i) => {
-        return (
-          <div key={i} className="flex justify-between">
-            {row.map((cell, j) => {
-              switch (cell) {
-                case 0:
-                  return <div className="bg-blue-500 h-full w-full">cell</div>;
-                case 1:
-                  return <div className="bg-red-500">cell</div>;
-                case 2:
-                  return <div className="bg-blue-100">cell</div>;
-              }
-            })}
-          </div>
-        );
-      })}
+      {grid.map((row, i) => (
+        <div key={i} className="flex flex-grow">
+          {row.map((cell, j) => (
+            <div
+              key={j}
+              className={`${
+                cell === 1
+                  ? "bg-red-500"
+                  : cell === 2
+                  ? "bg-green-500"
+                  : "bg-blue-200"
+              } flex-1`}
+            />
+          ))}
+        </div>
+      ))}
     </div>
   );
 };

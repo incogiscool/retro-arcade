@@ -27,9 +27,11 @@ export default function RootLayout({
         )}
       >
         <HomeNavbar />
-        <div className="h-full flex">
+        <div className="flex-grow flex">
           <HomeSidebar className="h-full" />
-          <main className="flex-grow p-12">{children}</main>
+          <main className="flex-grow p-12 h-full overflow-auto">
+            {children}
+          </main>
         </div>
         <Footer />
       </body>

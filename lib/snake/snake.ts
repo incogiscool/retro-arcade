@@ -11,14 +11,6 @@ export class Snake {
 
   constructor() {}
 
-  /*
-    
-    0 = empty
-    1 = apple
-    2 = snake
-    
-    */
-
   createGrid(width: number, height: number) {
     const createdGrid = [];
 
@@ -33,18 +25,25 @@ export class Snake {
     this.grid = createdGrid;
   }
 
-  generateApple() {
-    const randomX = Math.floor(Math.random() * this.grid.length);
-    const randomY = Math.floor(Math.random() * this.grid[0].length);
+  generateApple(): void {
+    // Generate apple as long as its not on any snake positions
+    while (true) {
+      const randomX = Math.floor(Math.random() * this.grid.length);
+      const randomY = Math.floor(Math.random() * this.grid[0].length);
 
-    this.snakeCoordinates.forEach((snakeCoordinate) => {
-      if (snakeCoordinate.x === randomX && snakeCoordinate.y === randomY) {
+      if (
+        this.snakeCoordinates.some(
+          (snakeCoordinate) =>
+            snakeCoordinate.x === randomX && snakeCoordinate.y === randomY
+        )
+      ) {
         return this.generateApple();
+      } else {
+        this.grid[randomX][randomY] = 1;
+        this.appleCoordinates = { x: randomX, y: randomY };
+        break;
       }
-    });
-
-    this.grid[randomX][randomY] = 1;
-    this.appleCoordinates = { x: randomX, y: randomY };
+    }
   }
 
   eatApple() {
@@ -93,35 +92,23 @@ export class Snake {
     }
   }
 
-  //   checkCollision() {
-  //     const snakeHead = this.snakeHead;
-
-  //     // if (this.snakeCoordinates.)
-
-  //     return false;
-  //   }
-
-  async play(gridHeight: number, gridWidth: number) {
+  async play(
+    gridHeight: number,
+    gridWidth: number,
+    updateGrid: (grid: Grid) => void
+  ) {
     this.createGrid(gridHeight, gridWidth);
-    this.generateApple();
     this.generateSnake();
 
     while (true) {
-      // this.moveSnake("right");
+      this.generateApple();
 
-      // if (
-      //   this.snakeHead.x === this?.appleCoordinates?.x &&
-      //   this.snakeHead.y === this?.appleCoordinates?.y
-      // ) {
-      //   this.eatApple();
-      //   this.generateApple();
-      //   // this.generateSnake();
-      // }
+      await new Promise((resolve) => setTimeout(resolve, 500));
+      this.eatApple();
 
       console.log(this.grid);
 
-      // Delay
-      await new Promise((resolve) => setTimeout(resolve, 1000));
+      updateGrid([...this.grid]); // Spread operator to ensure a new reference
     }
   }
 }
