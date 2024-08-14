@@ -6,6 +6,7 @@ export class Snake {
   public snakeCoordinates: Coordinates[] = [];
 
   readonly startPosition: Coordinates = { x: 0, y: 0 };
+  readonly tickSpeed = 250;
   readonly snakeHead = this.snakeCoordinates[0] || this.startPosition;
   readonly snakeTail =
     this.snakeCoordinates[this.snakeCoordinates.length - 1] ||
@@ -127,10 +128,10 @@ export class Snake {
 
     while (true) {
       // this.generateApple();
-      await new Promise((resolve) => setTimeout(resolve, 500));
+      await new Promise((resolve) => setTimeout(resolve, this.tickSpeed));
 
-      this.moveSnake("right");
-      this.moveSnake("down");
+      // this.moveSnake("right");
+      // this.moveSnake("down");
 
       // this.eatApple();
 
