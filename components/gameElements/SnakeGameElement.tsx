@@ -8,12 +8,31 @@ export const SnakeGameElement = () => {
   const [grid, setGrid] = useState<Grid>([]);
   const [ready, setReady] = useState(false);
 
+  const snake = new Snake();
+
   useEffect(() => {
     if (ready) {
-      const snake = new Snake();
       snake.play(15, 15, setGrid);
     }
   }, [ready]);
+
+  // On WASD keys move snake
+  if (ready) {
+    window.addEventListener("keydown", (event) => {
+      if (event.key === "w") {
+        snake.setMovement("up");
+      }
+      if (event.key === "a") {
+        snake.setMovement("left");
+      }
+      if (event.key === "s") {
+        snake.setMovement("down");
+      }
+      if (event.key === "d") {
+        snake.setMovement("right");
+      }
+    });
+  }
 
   return (
     <div className="h-full w-full">
@@ -30,7 +49,7 @@ export const SnakeGameElement = () => {
                       : cell === 2
                       ? "bg-green-500"
                       : "bg-blue-200"
-                  } flex-1`}
+                  } flex-1 aspect-auto border`}
                 />
               ))}
             </div>
@@ -39,6 +58,7 @@ export const SnakeGameElement = () => {
       ) : (
         <div className="flex justify-center flex-col items-center h-full">
           <h1 className="text-center text-2xl">Ready to play Snake?</h1>
+          <p className="text-sm">Use the WASD keys to move the snake</p>
           <Button className="mt-2" onClick={() => setReady(true)}>
             Play
           </Button>

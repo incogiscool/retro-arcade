@@ -4,6 +4,7 @@ export class Snake {
   public grid: Grid = [];
   public appleCoordinates: Coordinates | null = null;
   public snakeCoordinates: Coordinates[] = [];
+  public currentDirection: Direction = "right";
 
   readonly startPosition: Coordinates = { x: 0, y: 0 };
   readonly tickSpeed = 250;
@@ -14,7 +15,7 @@ export class Snake {
 
   constructor() {}
 
-  createGrid(width: number, height: number) {
+  private createGrid(width: number, height: number) {
     const createdGrid = [];
 
     for (let i = 0; i < height; i++) {
@@ -28,7 +29,7 @@ export class Snake {
     this.grid = createdGrid;
   }
 
-  generateApple(): void {
+  private generateApple(): void {
     // Generate apple as long as its not on any snake positions
     while (true) {
       const randomX = Math.floor(Math.random() * this.grid.length);
@@ -49,14 +50,14 @@ export class Snake {
     }
   }
 
-  eatApple() {
+  private eatApple() {
     if (this.appleCoordinates) {
       this.grid[this.appleCoordinates.y][this.appleCoordinates.x] = 0;
       this.appleCoordinates = null;
     }
   }
 
-  generateSnake() {
+  private generateSnake() {
     this.snakeCoordinates.push({
       x: this.startPosition.x,
       y: this.startPosition.y,
@@ -64,7 +65,7 @@ export class Snake {
     this.grid[this.startPosition.y][this.startPosition.x] = 2;
   }
 
-  moveSnake(direction: Direction) {
+  private moveSnake(direction: Direction) {
     switch (direction) {
       case "right": {
         this.snakeCoordinates = this.snakeCoordinates.map((snakeCoordinate) => {
@@ -118,24 +119,24 @@ export class Snake {
     }
   }
 
-  async play(
+  public setMovement(direction: Direction) {
+    this.currentDirection = direction;
+  }
+
+  public async play(
     gridHeight: number,
     gridWidth: number,
-    updateGrid: (grid: Grid) => void
+    updateGrid?: (grid: Grid) => void
   ) {
     this.createGrid(gridHeight, gridWidth);
     this.generateSnake();
 
     while (true) {
-      // this.generateApple();
       await new Promise((resolve) => setTimeout(resolve, this.tickSpeed));
 
-      // this.moveSnake("right");
-      // this.moveSnake("down");
+      this.moveSnake(this.currentDirection);
 
-      // this.eatApple();
-
-      updateGrid([...this.grid]); // Spread operator to ensure a new reference
+      updateGrid?.([...this.grid]); // Spread operator to ensure a new reference
     }
   }
 }
