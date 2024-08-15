@@ -5,11 +5,10 @@ export class Snake {
   public appleCoordinates: Coordinates | null = null;
   public snakeCoordinates: Coordinates[] = [];
   public currentDirection: Direction = "right";
-
+  public tickSpeed = 250;
   public gameOver = false;
 
   readonly startPosition: Coordinates = { x: 0, y: 0 };
-  readonly tickSpeed = 250;
 
   constructor() {}
 
@@ -85,7 +84,14 @@ export class Snake {
       head.x < 0 ||
       head.x >= this.grid[0].length ||
       head.y < 0 ||
-      head.y >= this.grid.length ||
+      head.y >= this.grid.length
+    ) {
+      this.endGame();
+      return;
+    }
+
+    // Check for collisions with snake segments
+    if (
       this.snakeCoordinates.some(
         (segment) => segment.x === head.x && segment.y === head.y
       )
@@ -123,15 +129,27 @@ export class Snake {
   public async play(
     gridHeight: number,
     gridWidth: number,
+    tickSpeed: number = 250,
     updateGrid?: (grid: Grid) => void,
-    setGameOver?: (gameOver: boolean) => void
+    setGameOver?: (gameOver: boolean) => void,
+    setWin?: (win: boolean) => void
   ) {
+    this.tickSpeed = tickSpeed;
     this.createGrid(gridHeight, gridWidth);
     this.generateSnake();
     this.generateApple();
 
     while (!this.gameOver) {
+      console.log(this.snakeCoordinates.length);
+      if (this.snakeCoordinates.length === gridHeight * gridWidth) {
+        this.gameOver = true;
+        setWin?.(true);
+        setGameOver?.(this.gameOver);
+        break;
+      }
+
       await new Promise((resolve) => setTimeout(resolve, this.tickSpeed));
+
       this.moveSnake(this.currentDirection);
 
       updateGrid?.([...this.grid]);

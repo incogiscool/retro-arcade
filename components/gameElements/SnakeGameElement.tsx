@@ -8,12 +8,12 @@ export const SnakeGameElement = () => {
   const [grid, setGrid] = useState<Grid>([]);
   const [ready, setReady] = useState(false);
   const [gameOver, setGameOver] = useState(false);
-  // Add win state
+  const [win, setWin] = useState(false);
 
   useEffect(() => {
     if (ready) {
       const newSnake = new Snake();
-      newSnake.play(5, 5, setGrid, setGameOver);
+      newSnake.play(3, 3, 350, setGrid, setGameOver, setWin);
 
       const handleKeyDown = (event: KeyboardEvent) => {
         if (event.key === "w") {
@@ -42,6 +42,7 @@ export const SnakeGameElement = () => {
   const handleRestart = async () => {
     setReady(false);
     await new Promise((resolve) => setTimeout(resolve, 500));
+    setWin(false);
     setGameOver(false);
     setGrid([]);
     setReady(true); // This will trigger useEffect to start a new game
@@ -68,11 +69,21 @@ export const SnakeGameElement = () => {
             </div>
           ))}
         </div>
-      ) : gameOver ? (
+      ) : gameOver && !win ? (
         <div className="flex justify-center flex-col items-center h-full">
           <h1 className="text-center text-2xl">Game Over</h1>
           <p className="text-sm">
             You lose! Try again by clicking the button below
+          </p>
+          <Button className="mt-2" onClick={handleRestart}>
+            Play again
+          </Button>
+        </div>
+      ) : win ? (
+        <div className="flex justify-center flex-col items-center h-full">
+          <h1 className="text-center text-2xl">You win!</h1>
+          <p className="text-sm">
+            You win! Try again by clicking the button below
           </p>
           <Button className="mt-2" onClick={handleRestart}>
             Play again
