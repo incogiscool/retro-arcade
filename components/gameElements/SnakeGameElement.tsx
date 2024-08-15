@@ -3,17 +3,31 @@ import { Snake } from "@/lib/snake/snake";
 import { Grid } from "@/lib/types";
 import { useEffect, useState } from "react";
 import { Button } from "../ui/button";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+
+export const snakeGridSizeOptions = [
+  { label: "Small", value: 5 },
+  { label: "Medium", value: 10 },
+  { label: "Large", value: 15 },
+];
 
 export const SnakeGameElement = () => {
   const [grid, setGrid] = useState<Grid>([]);
   const [ready, setReady] = useState(false);
   const [gameOver, setGameOver] = useState(false);
   const [win, setWin] = useState(false);
+  const [gridSize, setGridSize] = useState(5);
 
   useEffect(() => {
     if (ready) {
       const newSnake = new Snake();
-      newSnake.play(3, 3, 350, setGrid, setGameOver, setWin);
+      newSnake.play(gridSize, gridSize, 350, setGrid, setGameOver, setWin);
 
       const handleKeyDown = (event: KeyboardEvent) => {
         if (event.key === "w") {
@@ -93,6 +107,29 @@ export const SnakeGameElement = () => {
         <div className="flex justify-center flex-col items-center h-full">
           <h1 className="text-center text-2xl">Ready to play Snake?</h1>
           <p className="text-sm">Use the WASD keys to move the snake</p>
+
+          <div className="mt-4">
+            <label className="text-sm">Grid size</label>
+            <Select
+              defaultValue={"5"}
+              onValueChange={(value) => setGridSize(parseInt(value))}
+            >
+              <SelectTrigger className="w-[180px]">
+                <SelectValue placeholder="Grid size" />
+              </SelectTrigger>
+              <SelectContent>
+                {snakeGridSizeOptions.map((option) => (
+                  <SelectItem
+                    key={option.value}
+                    value={option.value.toString()}
+                  >
+                    {`${option.label} (${option.value}x${option.value})`}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+
           <Button className="mt-2" onClick={() => setReady(true)}>
             Play
           </Button>
