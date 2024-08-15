@@ -28,10 +28,9 @@ export class Snake {
   }
 
   private generateApple(): void {
-    // Generate apple as long as its not on any snake positions
     while (true) {
-      const randomX = Math.floor(Math.random() * this.grid.length);
-      const randomY = Math.floor(Math.random() * this.grid[0].length);
+      const randomX = Math.floor(Math.random() * this.grid[0].length);
+      const randomY = Math.floor(Math.random() * this.grid.length);
 
       if (
         this.snakeCoordinates.some(
@@ -39,9 +38,9 @@ export class Snake {
             snakeCoordinate.x === randomX && snakeCoordinate.y === randomY
         )
       ) {
-        return this.generateApple();
+        continue;
       } else {
-        this.grid[randomX][randomY] = 1;
+        this.grid[randomY][randomX] = 1;
         this.appleCoordinates = { x: randomX, y: randomY };
         break;
       }
@@ -50,7 +49,7 @@ export class Snake {
 
   private eatApple() {
     if (this.appleCoordinates) {
-      this.grid[this.appleCoordinates.y][this.appleCoordinates.x] = 0;
+      this.grid[this.appleCoordinates.y][this.appleCoordinates.x] = 2;
       this.appleCoordinates = null;
     }
   }
@@ -64,61 +63,61 @@ export class Snake {
   }
 
   private moveSnake(direction: Direction) {
+    const head = { ...this.snakeCoordinates[0] };
+
     switch (direction) {
-      case "right": {
-        this.snakeCoordinates = this.snakeCoordinates.map((snakeCoordinate) => {
-          this.grid[snakeCoordinate.y][snakeCoordinate.x] = 0;
-          this.grid[snakeCoordinate.y][snakeCoordinate.x + 1] = 2;
-          return {
-            x: snakeCoordinate.x + 1,
-            y: snakeCoordinate.y,
-          };
-        });
+      case "right":
+        head.x += 1;
         break;
-      }
-      case "left": {
-        this.snakeCoordinates = this.snakeCoordinates.map((snakeCoordinate) => {
-          this.grid[snakeCoordinate.y][snakeCoordinate.x] = 0;
-          this.grid[snakeCoordinate.y][snakeCoordinate.x - 1] = 2;
-          return {
-            x: snakeCoordinate.x - 1,
-            y: snakeCoordinate.y,
-          };
-        });
-
+      case "left":
+        head.x -= 1;
         break;
-      }
-
-      case "down": {
-        this.snakeCoordinates = this.snakeCoordinates.map((snakeCoordinate) => {
-          this.grid[snakeCoordinate.y][snakeCoordinate.x] = 0;
-          this.grid[snakeCoordinate.y + 1][snakeCoordinate.x] = 2;
-          return {
-            x: snakeCoordinate.x,
-            y: snakeCoordinate.y + 1,
-          };
-        });
-
+      case "down":
+        head.y += 1;
         break;
-      }
-
-      case "up": {
-        this.snakeCoordinates = this.snakeCoordinates.map((snakeCoordinate) => {
-          this.grid[snakeCoordinate.y][snakeCoordinate.x] = 0;
-          this.grid[snakeCoordinate.y - 1][snakeCoordinate.x] = 2;
-          return {
-            x: snakeCoordinate.x,
-            y: snakeCoordinate.y - 1,
-          };
-        });
-
+      case "up":
+        head.y -= 1;
         break;
-      }
+    }
+
+    // Check for collisions with walls
+    if (
+      head.x < 0 ||
+      head.x >= this.grid[0].length ||
+      head.y < 0 ||
+      head.y >= this.grid.length ||
+      this.snakeCoordinates.some(
+        (segment) => segment.x === head.x && segment.y === head.y
+      )
+    ) {
+      this.endGame();
+      return;
+    }
+
+    // Move the snake by adding the new head and removing the tail
+    this.snakeCoordinates.unshift(head);
+    const tail = this.snakeCoordinates.pop()!;
+    this.grid[tail.y][tail.x] = 0;
+    this.grid[head.y][head.x] = 2;
+
+    // Check if the snake has eaten an apple
+    if (
+      this.appleCoordinates &&
+      head.x === this.appleCoordinates.x &&
+      head.y === this.appleCoordinates.y
+    ) {
+      this.snakeCoordinates.push(tail); // Add back the tail to grow the snake
+      this.eatApple();
+      this.generateApple();
     }
   }
 
   public setMovement(direction: Direction) {
     this.currentDirection = direction;
+  }
+
+  public endGame() {
+    this.gameOver = true;
   }
 
   public async play(
@@ -129,29 +128,18 @@ export class Snake {
   ) {
     this.createGrid(gridHeight, gridWidth);
     this.generateSnake();
+    this.generateApple();
 
-    while (true) {
+    while (!this.gameOver) {
       await new Promise((resolve) => setTimeout(resolve, this.tickSpeed));
-      const snakeHead = this.snakeCoordinates[0];
+      this.moveSnake(this.currentDirection);
 
-      // Check for edge collisions
-      if (
-        (snakeHead.y === this.grid.length - 1 &&
-          this.currentDirection === "down") ||
-        (snakeHead.y === 0 && this.currentDirection === "up") ||
-        (snakeHead.x === this.grid[0].length - 1 &&
-          this.currentDirection === "right") ||
-        (snakeHead.x === 0 && this.currentDirection === "left")
-      ) {
-        this.gameOver = true;
+      updateGrid?.([...this.grid]);
 
+      if (this.gameOver) {
         setGameOver?.(this.gameOver);
         break;
       }
-
-      this.moveSnake(this.currentDirection);
-
-      updateGrid?.([...this.grid]); // Spread operator to ensure a new reference
     }
   }
 }

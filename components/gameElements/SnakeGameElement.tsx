@@ -8,32 +8,44 @@ export const SnakeGameElement = () => {
   const [grid, setGrid] = useState<Grid>([]);
   const [ready, setReady] = useState(false);
   const [gameOver, setGameOver] = useState(false);
-
-  const snake = new Snake();
+  // Add win state
 
   useEffect(() => {
     if (ready) {
-      snake.play(15, 15, setGrid, setGameOver);
+      const newSnake = new Snake();
+      newSnake.play(5, 5, setGrid, setGameOver);
+
+      const handleKeyDown = (event: KeyboardEvent) => {
+        if (event.key === "w") {
+          newSnake.setMovement("up");
+        }
+        if (event.key === "a") {
+          newSnake.setMovement("left");
+        }
+        if (event.key === "s") {
+          newSnake.setMovement("down");
+        }
+        if (event.key === "d") {
+          newSnake.setMovement("right");
+        }
+      };
+
+      window.addEventListener("keydown", handleKeyDown);
+
+      return () => {
+        window.removeEventListener("keydown", handleKeyDown);
+        newSnake.endGame(); // Ensure the game stops if the component unmounts or restarts
+      };
     }
   }, [ready, gameOver]);
 
-  // On WASD keys move snake
-  if (ready) {
-    window.addEventListener("keydown", (event) => {
-      if (event.key === "w") {
-        snake.setMovement("up");
-      }
-      if (event.key === "a") {
-        snake.setMovement("left");
-      }
-      if (event.key === "s") {
-        snake.setMovement("down");
-      }
-      if (event.key === "d") {
-        snake.setMovement("right");
-      }
-    });
-  }
+  const handleRestart = async () => {
+    setReady(false);
+    await new Promise((resolve) => setTimeout(resolve, 500));
+    setGameOver(false);
+    setGrid([]);
+    setReady(true); // This will trigger useEffect to start a new game
+  };
 
   return (
     <div className="h-full w-full">
@@ -55,6 +67,16 @@ export const SnakeGameElement = () => {
               ))}
             </div>
           ))}
+        </div>
+      ) : gameOver ? (
+        <div className="flex justify-center flex-col items-center h-full">
+          <h1 className="text-center text-2xl">Game Over</h1>
+          <p className="text-sm">
+            You lose! Try again by clicking the button below
+          </p>
+          <Button className="mt-2" onClick={handleRestart}>
+            Play again
+          </Button>
         </div>
       ) : (
         <div className="flex justify-center flex-col items-center h-full">
