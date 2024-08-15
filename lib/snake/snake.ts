@@ -134,10 +134,14 @@ export class Snake {
       await new Promise((resolve) => setTimeout(resolve, this.tickSpeed));
       const snakeHead = this.snakeCoordinates[0];
 
+      // Check for edge collisions
       if (
         (snakeHead.y === this.grid.length - 1 &&
           this.currentDirection === "down") ||
-        (snakeHead.y === 0 && this.currentDirection === "up")
+        (snakeHead.y === 0 && this.currentDirection === "up") ||
+        (snakeHead.x === this.grid[0].length - 1 &&
+          this.currentDirection === "right") ||
+        (snakeHead.x === 0 && this.currentDirection === "left")
       ) {
         this.gameOver = true;
 
@@ -147,15 +151,6 @@ export class Snake {
 
       this.moveSnake(this.currentDirection);
 
-      // Check for collisions
-      if (snakeHead.x > this.grid[0].length || snakeHead.x < 0) {
-        this.gameOver = true;
-
-        setGameOver?.(this.gameOver);
-        break;
-      }
-
-      console.log(snakeHead.x, this.grid[0].length);
       updateGrid?.([...this.grid]); // Spread operator to ensure a new reference
     }
   }
